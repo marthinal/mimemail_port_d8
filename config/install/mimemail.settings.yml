@@ -1,3 +1,5 @@
-format: ''
-mail: ''
+format: 'html'
 name : ''
+mail: ''
+linkonly: 0
+
