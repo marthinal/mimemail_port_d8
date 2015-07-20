@@ -9,6 +9,9 @@ namespace Drupal\mimemail\Plugin\Mail;
 
 use Drupal\Core\Mail\MailInterface;
 use Drupal\Core\Mail\MailFormatHelper;
+use Drupal\mimemail\Utility\MimeMailFormatHelper;
+use Drupal\Core\Mail\Plugin\Mail\PhpMail;
+use Drupal\Core\Site\Settings;
 
 /**
  * Defines the default Drupal mail backend, using PHP's native mail() function.
@@ -19,7 +22,7 @@ use Drupal\Core\Mail\MailFormatHelper;
  *   description = @Translation("Sends MIME-encoded emails with embedded images and attachments..")
  * )
  */
-class MimeMail implements MailInterface {
+class MimeMail extends PhpMail {
 
   /**
    * {@inheritdoc}
@@ -47,7 +50,7 @@ class MimeMail implements MailInterface {
       $message = mimemail_prepare_message($message);
     }*/
     // @TODO set mimemail_engine. For the moment let's prepare the message.
-    $this->prepareMessage($message);
+    $message =  $this->prepareMessage($message);
 
     return $message;
   }
@@ -56,14 +59,8 @@ class MimeMail implements MailInterface {
    * {@inheritdoc}
    */
   public function mail(array $message) {
-    $engine = 'mimemail';//variable_get('mimemail_engine', 'mimemail');
-    $mailengine = $engine . '_mailengine';
-
-    if (!$engine || !function_exists($mailengine)) {
-      return FALSE;
-    }
-
-    return $mailengine('send', $message);
+    $result = parent::mail($message);
+    return $result;
   }
 
   /**
@@ -174,18 +171,19 @@ class MimeMail implements MailInterface {
     /*foreach (module_implements('mail_post_process') as $module) {
       $function = $module . '_mail_post_process';
       $function($body, $key);
-    }
+    }*/
 
-    $plain = $plain || variable_get('mimemail_textonly', 0);
-    $from = mimemail_address($from);
-    $mail = mimemail_html_body($body, $subject, $plain, $plaintext, $attachments);
+    //$plain = $plain || variable_get('mimemail_textonly', 0);
+    $from = MimeMailFormatHelper::mimeMailAddress($from);
+    $mail = MimeMailFormatHelper::mimeMailHtmlBody($body, $subject, $plain, $plaintext, $attachments);
     $headers = array_merge($message['headers'], $headers, $mail['headers']);
 
-    $message['to'] = mimemail_address($to, $simple_address);
+    //$message['to'] = MimeMailFormatHelper::mimeMailAddress($to, $simple_address);
+    $message['to'] = MimeMailFormatHelper::mimeMailAddress($to);
     $message['from'] = $from;
     $message['subject'] = $subject;
     $message['body'] = $mail['body'];
-    $message['headers'] = mimemail_headers($headers, $from);*/
+    $message['headers'] = MimeMailFormatHelper::mimeMailHeaders($headers, $from);
 
     return $message;
   }
