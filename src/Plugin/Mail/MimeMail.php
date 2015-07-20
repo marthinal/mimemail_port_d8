@@ -22,7 +22,7 @@ use Drupal\Core\Site\Settings;
  *   description = @Translation("Sends MIME-encoded emails with embedded images and attachments..")
  * )
  */
-class MimeMail extends PhpMail {
+class MimeMail implements MailInterface {
 
   /**
    * {@inheritdoc}
@@ -59,8 +59,7 @@ class MimeMail extends PhpMail {
    * {@inheritdoc}
    */
   public function mail(array $message) {
-    $result = parent::mail($message);
-    return $result;
+    // @TODO
   }
 
   /**
