@@ -84,7 +84,7 @@ class AdminForm extends ConfigFormBase {
     $form['mimemail']['name'] = array(
       '#type'          => 'textfield',
       '#title'         => t('Sender name'),
-      '#default_value' => \Drupal::config('mimemail.settings')->get('name'),
+      '#default_value' => $config->get('name') ? $config->get('name') : \Drupal::config('system.site')->get('name'),
       '#size'          => 60,
       '#maxlength'     => 128,
       '#description'   => t('The name that all site emails will be from when using default engine.'),
@@ -92,7 +92,7 @@ class AdminForm extends ConfigFormBase {
     $form['mimemail']['mail'] = array(
       '#type'          => 'textfield',
       '#title'         => t('Sender e-mail address'),
-      '#default_value' => \Drupal::config('mimemail.settings')->get('mail'),
+      '#default_value' => $config->get('mail') ? $config->get('mail') : \Drupal::config('system.site')->get('mail'),
       '#size'          => 60,
       '#maxlength'     => 128,
       '#description'   => t('The email address that all site e-mails will be from when using default engine.'),
