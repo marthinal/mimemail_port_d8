@@ -126,7 +126,7 @@ class MimeMailFormatHelper {
 
       // Expand all local links.
       $pattern = '/(<a[^>]+href=")([^"]*)/mi';
-      $body = preg_replace_callback($pattern, '_mimemail_expand_links', $body);
+      $body = preg_replace_callback($pattern, ['\Drupal\mimemail\Utility\MimeMailFormatHelper', 'expandLinks'], $body);
 
       $mime_parts = static::mimeMailExtractFiles($body);
 
@@ -179,7 +179,7 @@ class MimeMailFormatHelper {
    */
   public static function mimeMailExtractFiles($html) {
     $pattern = '/(<link[^>]+href=[\'"]?|<object[^>]+codebase=[\'"]?|@import |[\s]src=[\'"]?)([^\'>"]+)([\'"]?)/mis';
-    $content = preg_replace_callback($pattern, '_mimemail_replace_files', $html);
+    $content = preg_replace_callback($pattern, ['\Drupal\mimemail\Utility\MimeMailFormatHelper', 'replaceFiles'], $html);
 
     $encoding = '8Bit';
     $body = explode("\n", $content);
@@ -565,6 +565,18 @@ class MimeMailFormatHelper {
     }
 
     return $headers;
+  }
+
+  /**
+   * @param $matches
+   * @return string
+   */
+  public static function expandLinks($matches) {
+    return $matches[1] . self::mimeMailUrl($matches[2]);
+  }
+
+  public function replaceFiles($matches) {
+    return stripslashes($matches[1]) .self::mimeMailFile($matches[2]) . stripslashes($matches[3]);
   }
 
 }
